@@ -34,15 +34,18 @@ scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-# Step 6: Train an SVR model with an RBF kernel
-svr_model = SVR(kernel='rbf')
-svr_model.fit(X_train, y_train)
+kernel_arguments = ["linear", "poly", "rbf", "sigmoid"]
+hyper_params = [0.01, 0.1, 1, 10, 100, 1000, 5000]
 
-# Step 7: Display support vector information and the model intercept
-print(f"Number of Support Vectors Used: {svr_model.n_support_}")
-print(f"Model Intercept: {svr_model.intercept_}")
+for index in range(len(hyper_params)):
+    all_value = ""
+    for kernel in kernel_arguments:
+        # Step 6: Train an SVR model with an RBF kernel
+        svr_model = SVR(kernel=kernel, C=hyper_params[index])
+        svr_model.fit(X_train, y_train)
 
-# Step 8: Make predictions and evaluate the model using the R² score
-y_pred = svr_model.predict(X_test)
-r2 = r2_score(y_test, y_pred)
-print(f"R² Score: {r2}")
+        y_pred = svr_model.predict(X_test)
+        r2 = r2_score(y_test, y_pred)
+        # print(f"===> R² Score for {kernel} : {r2:.5f}")
+        all_value += f"{r2:.5f}" + " | "
+    print("| " + str(index + 1) + " | " + str(hyper_params[index]) + " | " + all_value)
